@@ -107,14 +107,41 @@ async def cmd_start(message: types.Message, state: FSMContext):
         return
 
     if result.get("exists"):
-        await message.answer(
-            f"👋 *Xush kelibsiz qaytib!*\n\n"
-            f"👤 Login: `{result.get('username', user_id)}`\n"
-            f"💰 Balans: *{result.get('balance', 0):,}* so'm\n\n"
-            f"O'yin o'ynash uchun quyidagi tugmani bosing:",
-            parse_mode="Markdown",
-            reply_markup=main_keyboard()
-        )
+        # Eski user - parolni reset qilib ber
+        try:
+            async with aiohttp.ClientSession() as session:
+                async with session.post(
+                    f"{API_BASE}/auth/reset-my-password",
+                    json={"telegram_id": user_id, "secret": SECRET},
+                    timeout=aiohttp.ClientTimeout(total=10)
+                ) as resp:
+                    reset_data = await resp.json()
+            new_pass = reset_data.get("password", "")
+        except Exception:
+            new_pass = ""
+
+        if new_pass:
+            await message.answer(
+                f"👋 *Xush kelibsiz qaytib!*\n\n"
+                f"🔄 Parolingiz yangilandi:\n\n"
+                f"━━━━━━━━━━━━━━━━\n"
+                f"👤 Login: `{result.get('username', user_id)}`\n"
+                f"🔑 Parol: `{new_pass}`\n"
+                f"━━━━━━━━━━━━━━━━\n\n"
+                f"⚠️ Bu parolni saqlang!\n"
+                f"💰 Balans: *{result.get('balance', 0):,}* so'm",
+                parse_mode="Markdown",
+                reply_markup=main_keyboard()
+            )
+        else:
+            await message.answer(
+                f"👋 *Xush kelibsiz!*\n\n"
+                f"👤 Login: `{result.get('username', user_id)}`\n"
+                f"💰 Balans: *{result.get('balance', 0):,}* so'm\n\n"
+                f"Parolni olish uchun /mypassword yozing.",
+                parse_mode="Markdown",
+                reply_markup=main_keyboard()
+            )
     else:
         username = result.get('username', user_id)
         password = result.get('password', '-')
