@@ -19,8 +19,8 @@ app = FastAPI(title="Casino API", version="1.0.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
-        "https://twatokenuzabc.vercel.app",
-        "https://twatokenuzabc-admin.vercel.app",
+        "https://twatokenuzabcd.vercel.app",
+        "https://twatokenuzabcd-yreg.vercel.app",
     ],
     allow_credentials=True,
     allow_methods=["*"],
