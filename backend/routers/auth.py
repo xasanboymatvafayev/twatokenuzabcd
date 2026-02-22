@@ -108,3 +108,33 @@ async def reset_password(request: TelegramRegisterRequest, db: AsyncSession = De
         "username": user.username,
         "password": new_password
     }
+
+
+@router.post("/delete-and-recreate")
+async def delete_and_recreate(request: TelegramRegisterRequest, db: AsyncSession = Depends(get_db)):
+    """Eski userni o'chirib yangi parol bilan yaratadi (balans saqlanadi)"""
+    from core.config import settings
+    if request.secret != settings.SECRET_KEY[:20]:
+        raise HTTPException(status_code=403, detail="Invalid secret")
+
+    result = await db.execute(select(User).where(User.telegram_id == request.telegram_id))
+    user = result.scalar_one_or_none()
+
+    new_password = generate_password(10)
+    
+    if user:
+        old_balance = user.balance
+        user.password_hash = hash_password(new_password)
+        await db.commit()
+        return {"username": user.username, "password": new_password, "balance": old_balance}
+    else:
+        username = f"user_{request.telegram_id}"
+        new_user = User(
+            telegram_id=request.telegram_id,
+            username=username,
+            password_hash=hash_password(new_password),
+            balance=0.0
+        )
+        db.add(new_user)
+        await db.commit()
+        return {"username": username, "password": new_password, "balance": 0}
