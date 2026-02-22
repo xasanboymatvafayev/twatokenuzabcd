@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>🎰 Casino</title>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+:root {
+  --bg:#0d0f1a; --card:#151828; --card2:#1e2235;
+  --primary:#6c63ff; --gold:#f5c518; --green:#00e676;
+  --red:#ff5252; --text:#e8eaf6; --muted:#8892b0; --border:#2d3561;
+}
+body { background:var(--bg); color:var(--text); font-family:'Segoe UI',sans-serif; min-height:100vh; }
+
+/* LOGIN */
+#login-screen { display:flex; align-items:center; justify-content:center; min-height:100vh; padding:20px; }
+.login-box { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:40px 30px; width:100%; max-width:380px; }
+.login-logo { text-align:center; font-size:48px; margin-bottom:10px; }
+.login-title { text-align:center; font-size:22px; font-weight:700; margin-bottom:5px; }
+.login-sub { text-align:center; color:var(--muted); font-size:13px; margin-bottom:30px; }
+.form-group { margin-bottom:16px; }
+.form-group label { display:block; font-size:13px; color:var(--muted); margin-bottom:6px; }
+.form-group input { width:100%; background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:12px 16px; color:var(--text); font-size:15px; outline:none; transition:border-color .2s; }
+.form-group input:focus { border-color:var(--primary); }
+.btn-primary { width:100%; background:linear-gradient(135deg,var(--primary),#a855f7); color:white; border:none; border-radius:12px; padding:14px; font-size:16px; font-weight:700; cursor:pointer; transition:opacity .2s; }
+.btn-primary:hover { opacity:0.9; }
+.error-msg { color:var(--red); font-size:13px; text-align:center; margin-top:10px; display:none; }
+
+/* APP */
+#app { display:none; }
+.topbar { background:var(--card); border-bottom:1px solid var(--border); padding:12px 16px; display:flex; align-items:center; justify-content:space-between; position:sticky; top:0; z-index:100; }
+.topbar-logo { font-size:20px; font-weight:800; background:linear-gradient(135deg,var(--primary),var(--gold)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+.balance-badge { background:var(--card2); border:1px solid var(--border); border-radius:20px; padding:6px 14px; font-size:14px; font-weight:600; color:var(--gold); cursor:pointer; }
+
+.bottom-nav { position:fixed; bottom:0; left:0; right:0; background:var(--card); border-top:1px solid var(--border); display:flex; z-index:100; }
+.nav-item { flex:1; display:flex; flex-direction:column; align-items:center; padding:10px 0; cursor:pointer; font-size:11px; color:var(--muted); transition:color .2s; }
+.nav-item.active { color:var(--primary); }
+.nav-item svg { width:22px; height:22px; margin-bottom:3px; }
+
+.page { display:none; padding:16px; padding-bottom:80px; }
+.page.active { display:block; }
+.page-title { font-size:20px; font-weight:700; margin-bottom:16px; }
+
+/* GAMES */
+.games-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.game-card { background:var(--card); border:1px solid var(--border); border-radius:16px; overflow:hidden; cursor:pointer; transition:transform .2s,border-color .2s; }
+.game-card:hover { transform:translateY(-2px); border-color:var(--primary); }
+.game-card .game-img { height:100px; display:flex; align-items:center; justify-content:center; font-size:50px; }
+.game-card .game-info { padding:12px; }
+.game-card .game-name { font-size:14px; font-weight:700; margin-bottom:4px; }
+.game-card .game-desc { font-size:11px; color:var(--muted); }
+
+/* PROFILE */
+.profile-card { background:var(--card); border:1px solid var(--border); border-radius:16px; padding:20px; margin-bottom:12px; text-align:center; }
+.profile-avatar { font-size:48px; margin-bottom:8px; }
+.profile-name { font-size:18px; font-weight:700; margin-bottom:4px; }
+.balance-card { background:linear-gradient(135deg,var(--primary),#a855f7); border-radius:16px; padding:20px; margin-bottom:12px; text-align:center; }
+.balance-label { font-size:13px; opacity:.8; margin-bottom:4px; }
+.balance-amount { font-size:32px; font-weight:900; }
+.action-btns { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+.action-btn { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:14px; text-align:center; cursor:pointer; transition:all .2s; }
+.action-btn:hover { border-color:var(--primary); }
+.action-btn .icon { font-size:24px; margin-bottom:4px; }
+.action-btn .label { font-size:12px; color:var(--muted); }
+
+.stat-row { display:flex; justify-content:space-between; padding:12px 0; border-bottom:1px solid var(--border); }
+.stat-label { color:var(--muted); font-size:14px; }
+.stat-value { font-size:14px; font-weight:600; }
+.stat-win { color:var(--green); }
+.stat-loss { color:var(--red); }
+
+/* SETTINGS */
+.settings-card { background:var(--card); border:1px solid var(--border); border-radius:16px; margin-bottom:12px; overflow:hidden; }
+.settings-item { display:flex; align-items:center; padding:16px; cursor:pointer; transition:background .2s; border-bottom:1px solid var(--border); gap:12px; }
+.settings-item:last-child { border:none; }
+.settings-item:hover { background:var(--card2); }
+.settings-item .si-icon { font-size:22px; width:36px; text-align:center; }
+.settings-item .si-text { flex:1; }
+.settings-item .si-title { font-size:15px; font-weight:600; }
+.settings-item .si-desc { font-size:12px; color:var(--muted); margin-top:2px; }
+.settings-item .si-arrow { color:var(--muted); }
+
+/* MODALS */
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.8); z-index:200; display:none; align-items:flex-end; }
+.modal-overlay.active { display:flex; }
+.modal { background:var(--card); border-radius:24px 24px 0 0; width:100%; max-height:95vh; overflow-y:auto; padding:20px 16px 32px; }
+.modal-handle { width:40px; height:4px; background:var(--border); border-radius:2px; margin:0 auto 20px; }
+.modal-title { font-size:20px; font-weight:800; margin-bottom:20px; text-align:center; }
+
+/* FORM MODAL */
+.input-group { margin-bottom:14px; }
+.input-group label { display:block; font-size:12px; color:var(--muted); margin-bottom:6px; }
+.input-group input { width:100%; background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:12px 14px; color:var(--text); font-size:15px; outline:none; }
+.input-group input:focus { border-color:var(--primary); }
+.btn-modal { width:100%; border:none; border-radius:12px; padding:14px; font-size:16px; font-weight:700; cursor:pointer; margin-bottom:10px; }
+.btn-modal-primary { background:linear-gradient(135deg,var(--primary),#a855f7); color:white; }
+.btn-modal-danger { background:rgba(255,82,82,0.2); color:var(--red); border:1px solid var(--red); }
+.btn-modal-cancel { background:var(--card2); color:var(--muted); }
+
+/* AVIATOR */
+.aviator-sky { background:linear-gradient(180deg,#0a1628 0%,#1a237e 60%,#283593 100%); border-radius:16px; height:220px; position:relative; overflow:hidden; margin-bottom:16px; }
+.stars { position:absolute; inset:0; }
+.star { position:absolute; width:2px; height:2px; background:white; border-radius:50%; animation:twinkle 2s infinite; }
+@keyframes twinkle { 0%,100%{opacity:.3} 50%{opacity:1} }
+.plane { position:absolute; font-size:32px; bottom:30px; left:30px; transition:all .1s; filter:drop-shadow(0 0 10px rgba(108,99,255,.8)); }
+.multiplier-display { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); text-align:center; }
+.multiplier-big { font-size:52px; font-weight:900; color:white; text-shadow:0 0 30px var(--primary); font-family:monospace; }
+.multiplier-label { font-size:13px; color:rgba(255,255,255,.6); }
+.crash-overlay { position:absolute; inset:0; background:rgba(255,82,82,.2); display:none; align-items:center; justify-content:center; border-radius:16px; }
+.crash-text { font-size:36px; font-weight:900; color:var(--red); text-shadow:0 0 20px var(--red); }
+
+/* BET CONTROLS */
+.bet-row { display:flex; gap:8px; margin-bottom:12px; }
+.bet-input { flex:1; background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:10px 14px; color:var(--text); font-size:15px; font-weight:600; outline:none; }
+.bet-input:focus { border-color:var(--primary); }
+.quick-bets { display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
+.quick-bet { background:var(--card2); border:1px solid var(--border); border-radius:8px; padding:6px 12px; font-size:13px; cursor:pointer; color:var(--muted); transition:all .2s; }
+.quick-bet:hover { border-color:var(--primary); color:var(--primary); }
+.btn-game { flex:1; border:none; border-radius:12px; padding:14px; font-size:16px; font-weight:700; cursor:pointer; transition:all .2s; }
+.btn-play { background:linear-gradient(135deg,var(--green),#00c853); color:#000; }
+.btn-cashout { background:linear-gradient(135deg,var(--gold),#ff9800); color:#000; display:none; }
+.btn-game:disabled { opacity:.5; cursor:not-allowed; }
+
+/* MINES */
+.mines-count-selector { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+.mine-count-btn { background:var(--card2); border:1px solid var(--border); border-radius:8px; padding:6px 12px; cursor:pointer; font-size:13px; color:var(--muted); transition:all .2s; }
+.mine-count-btn.active { border-color:var(--red); color:var(--red); background:rgba(255,82,82,.1); }
+.mines-board { display:grid; grid-template-columns:repeat(5,1fr); gap:6px; }
+.mine-cell { aspect-ratio:1; background:var(--card2); border:1px solid var(--border); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:22px; cursor:pointer; transition:all .15s; user-select:none; }
+.mine-cell:hover:not(.revealed) { border-color:var(--primary); background:rgba(108,99,255,.1); }
+.mine-cell.safe { background:rgba(0,230,118,.2); border-color:var(--green); }
+.mine-cell.mine { background:rgba(255,82,82,.2); border-color:var(--red); }
+.mine-cell.revealed { cursor:default; }
+
+/* APPLE */
+.apple-board { display:flex; flex-direction:column-reverse; gap:8px; margin-bottom:16px; }
+.apple-row-wrapper { display:flex; align-items:center; gap:8px; }
+.apple-row { display:flex; gap:8px; flex:1; }
+.apple-cell { flex:1; aspect-ratio:1; background:var(--card2); border:1px solid var(--border); border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:26px; cursor:pointer; transition:all .15s; user-select:none; max-height:70px; }
+.apple-cell:hover:not(.revealed):not(.inactive) { border-color:var(--green); transform:scale(1.05); }
+.apple-cell.safe { background:rgba(0,230,118,.2); border-color:var(--green); }
+.apple-cell.bad { background:rgba(255,82,82,.2); border-color:var(--red); }
+.apple-cell.inactive { opacity:.3; cursor:default; }
+.apple-cell.active-row { border-color:var(--gold); box-shadow:0 0 10px rgba(245,197,24,.3); }
+.row-multiplier { text-align:right; font-size:12px; color:var(--gold); font-weight:600; width:50px; display:flex; align-items:center; }
+
+/* HISTORY */
+.history-item { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:12px 16px; margin-bottom:8px; display:flex; align-items:center; gap:12px; }
+.history-icon { font-size:24px; width:40px; height:40px; border-radius:50%; background:var(--card2); display:flex; align-items:center; justify-content:center; }
+.history-info { flex:1; }
+.history-game { font-size:14px; font-weight:600; }
+.history-date { font-size:12px; color:var(--muted); }
+.history-amount { text-align:right; font-size:15px; font-weight:700; }
+
+/* TOAST */
+.toast { position:fixed; top:70px; left:50%; transform:translateX(-50%); background:var(--card2); border:1px solid var(--border); border-radius:12px; padding:10px 20px; font-size:14px; z-index:999; opacity:0; transition:opacity .3s; white-space:nowrap; }
+.toast.show { opacity:1; }
+.toast.win { border-color:var(--green); color:var(--green); }
+.toast.loss { border-color:var(--red); color:var(--red); }
+
+.min-bet-note { text-align:center; font-size:12px; color:var(--muted); margin-bottom:8px; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">🎰</div>
+    <div class="login-title">Casino</div>
+    <div class="login-sub">Telegram bot orqali olingan login va parol bilan kiring</div>
+    <div class="form-group">
+      <label>Login (Telegram ID)</label>
+      <input type="text" id="login-username" placeholder="user_123456789" autocomplete="username">
+    </div>
+    <div class="form-group">
+      <label>Parol</label>
+      <input type="password" id="login-password" placeholder="••••••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn-primary" onclick="doLogin()">Kirish →</button>
+    <div class="error-msg" id="login-error">Login yoki parol noto'g'ri</div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <div class="topbar">
+    <div class="topbar-logo">🎰 Casino</div>
+    <div class="balance-badge" id="topbar-balance" onclick="refreshBalance()">💰 0</div>
+  </div>
+
+  <!-- PAGES -->
+  <div id="page-games" class="page active">
+    <div class="page-title">🎮 O'yinlar</div>
+    <div class="games-grid">
+      <div class="game-card" onclick="openGame('aviator')">
+        <div class="game-img" style="background:linear-gradient(135deg,#0d1b4b,#1a237e)">✈️</div>
+        <div class="game-info"><div class="game-name">Aviator</div><div class="game-desc">Koeffitsientni to'plang!</div></div>
+      </div>
+      <div class="game-card" onclick="openGame('mines')">
+        <div class="game-img" style="background:linear-gradient(135deg,#1a0a0a,#4a1515)">💣</div>
+        <div class="game-info"><div class="game-name">Mines</div><div class="game-desc">Minalardan saqlaning!</div></div>
+      </div>
+      <div class="game-card" onclick="openGame('apple')">
+        <div class="game-img" style="background:linear-gradient(135deg,#0a2a0a,#1b5e20)">🍎</div>
+        <div class="game-info"><div class="game-name">Apple Fortune</div><div class="game-desc">To'g'ri olmani toping!</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="page-profile" class="page">
+    <div class="profile-card">
+      <div class="profile-avatar">👤</div>
+      <div class="profile-name" id="profile-username">-</div>
+    </div>
+    <div class="balance-card">
+      <div class="balance-label">Balans</div>
+      <div class="balance-amount" id="profile-balance">0 so'm</div>
+    </div>
+    <div class="action-btns">
+      <div class="action-btn" onclick="showDepositModal()"><div class="icon">➕</div><div class="label">To'ldirish</div></div>
+      <div class="action-btn" onclick="showWithdrawModal()"><div class="icon">➖</div><div class="label">Yechish</div></div>
+    </div>
+    <div>
+      <div class="stat-row"><span class="stat-label">Jami yutgan</span><span class="stat-value stat-win" id="stat-wins">0</span></div>
+      <div class="stat-row"><span class="stat-label">Jami yutqazgan</span><span class="stat-value stat-loss" id="stat-losses">0</span></div>
+    </div>
+
+    <div class="settings-card" style="margin-top:16px">
+      <div class="settings-item" onclick="openModal('modal-promo')">
+        <div class="si-icon">🎟</div>
+        <div class="si-text"><div class="si-title">Promokod</div><div class="si-desc">Bonus olish</div></div>
+        <div class="si-arrow">›</div>
+      </div>
+      <div class="settings-item" onclick="openModal('modal-password')">
+        <div class="si-icon">🔐</div>
+        <div class="si-text"><div class="si-title">Parolni yangilash</div><div class="si-desc">Xavfsizlik</div></div>
+        <div class="si-arrow">›</div>
+      </div>
+      <div class="settings-item" onclick="doLogout()" style="color:var(--red)">
+        <div class="si-icon">🚪</div>
+        <div class="si-text"><div class="si-title" style="color:var(--red)">Chiqish</div><div class="si-desc">Akkauntdan chiqish</div></div>
+        <div class="si-arrow">›</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="page-history" class="page">
+    <div class="page-title">📜 Tarix</div>
+    <div id="history-list"></div>
+  </div>
+
+  <div class="bottom-nav">
+    <div class="nav-item active" onclick="showPage('games',this)">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M15 7.5V2H9v5.5l3 3 3-3zM7.5 9H2v6h5.5l3-3-3-3zM9 16.5V22h6v-5.5l-3-3-3 3zM16.5 9l-3 3 3 3H22V9h-5.5z"/></svg>
+      O'yinlar
+    </div>
+    <div class="nav-item" onclick="showPage('profile',this);loadProfile()">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg>
+      Profil
+    </div>
+    <div class="nav-item" onclick="showPage('history',this);loadHistory()">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 3c-4.97 0-9 4.03-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42C8.27 19.99 10.51 21 13 21c4.97 0 9-4.03 9-9s-4.03-9-9-9zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>
+      Tarix
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: DEPOSIT -->
+<div class="modal-overlay" id="modal-deposit">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">➕ Balans To'ldirish</div>
+    <div class="input-group">
+      <label>Summa (so'm)</label>
+      <input type="number" id="dep-amount" placeholder="Masalan: 50000" min="10000">
+    </div>
+    <button class="btn-modal btn-modal-primary" onclick="submitDeposit()">Davom etish →</button>
+    <button class="btn-modal btn-modal-cancel" onclick="closeModal('modal-deposit')">Bekor qilish</button>
+  </div>
+</div>
+
+<!-- MODAL: WITHDRAW -->
+<div class="modal-overlay" id="modal-withdraw">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">➖ Balans Yechish</div>
+    <div class="input-group">
+      <label>Summa (so'm)</label>
+      <input type="number" id="with-amount" placeholder="Masalan: 50000" min="10000">
+    </div>
+    <div class="input-group">
+      <label>Karta raqamingiz (16 ta raqam)</label>
+      <input type="text" id="with-card" placeholder="8600XXXXXXXXXXXX" maxlength="16">
+    </div>
+    <button class="btn-modal btn-modal-primary" onclick="submitWithdraw()">So'rov yuborish</button>
+    <button class="btn-modal btn-modal-cancel" onclick="closeModal('modal-withdraw')">Bekor qilish</button>
+  </div>
+</div>
+
+<!-- MODAL: PROMO -->
+<div class="modal-overlay" id="modal-promo">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🎟 Promokod</div>
+    <div class="input-group">
+      <label>Promokod kiriting</label>
+      <input type="text" id="promo-input" placeholder="BONUS2024" style="text-transform:uppercase">
+    </div>
+    <button class="btn-modal btn-modal-primary" onclick="applyPromo()">Faollashtirish</button>
+    <button class="btn-modal btn-modal-cancel" onclick="closeModal('modal-promo')">Bekor qilish</button>
+  </div>
+</div>
+
+<!-- MODAL: CHANGE PASSWORD -->
+<div class="modal-overlay" id="modal-password">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🔐 Parolni Yangilash</div>
+    <div class="input-group">
+      <label>Joriy parol</label>
+      <input type="password" id="old-password" placeholder="••••••••">
+    </div>
+    <div class="input-group">
+      <label>Yangi parol (minimum 8 belgi)</label>
+      <input type="password" id="new-password" placeholder="••••••••">
+    </div>
+    <div class="input-group">
+      <label>Yangi parolni tasdiqlang</label>
+      <input type="password" id="confirm-password" placeholder="••••••••">
+    </div>
+    <button class="btn-modal btn-modal-primary" onclick="changePassword()">Yangilash</button>
+    <button class="btn-modal btn-modal-cancel" onclick="closeModal('modal-password')">Bekor qilish</button>
+  </div>
+</div>
+
+<!-- GAME MODALS -->
+<!-- AVIATOR -->
+<div class="modal-overlay" id="modal-aviator">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">✈️ Aviator</div>
+    <div class="aviator-sky" id="aviator-sky">
+      <div class="stars" id="stars-container"></div>
+      <div class="plane" id="plane">✈️</div>
+      <div class="multiplier-display">
+        <div class="multiplier-big" id="avi-multiplier">1.00x</div>
+        <div class="multiplier-label" id="avi-status">Boshlash uchun bet kiriting</div>
+      </div>
+      <div class="crash-overlay" id="crash-overlay">
+        <div class="crash-text" id="crash-text">CRASHED!</div>
+      </div>
+    </div>
+    <div class="min-bet-note">⚠️ Minimum bet: 1,000 so'm</div>
+    <div class="quick-bets">
+      <div class="quick-bet" onclick="setAviatorBet(1000)">1K</div>
+      <div class="quick-bet" onclick="setAviatorBet(5000)">5K</div>
+      <div class="quick-bet" onclick="setAviatorBet(10000)">10K</div>
+      <div class="quick-bet" onclick="setAviatorBet(25000)">25K</div>
+      <div class="quick-bet" onclick="setAviatorBet(50000)">50K</div>
+    </div>
+    <div class="bet-row">
+      <input type="number" class="bet-input" id="avi-bet" placeholder="Bet (min 1000)" value="1000" min="1000">
+      <input type="number" class="bet-input" id="avi-autocashout" placeholder="Auto x" style="width:90px;flex:none" min="1.01" step="0.01">
+    </div>
+    <div class="bet-row">
+      <button class="btn-game btn-play" id="avi-play-btn" onclick="startAviator()">O'YINNI BOSHLASH</button>
+      <button class="btn-game btn-cashout" id="avi-cashout-btn" onclick="cashoutAviator()">NAQD OLISH 💰</button>
+    </div>
+    <div style="margin-top:10px;text-align:center">
+      <button onclick="closeModal('aviator')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px">← Orqaga</button>
+    </div>
+  </div>
+</div>
+
+<!-- MINES -->
+<div class="modal-overlay" id="modal-mines">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">💣 Mines</div>
+    <div style="margin-bottom:12px;text-align:center">
+      <span style="color:var(--gold);font-weight:700;font-size:16px" id="mines-multiplier-display">x1.00</span>
+      <span style="color:var(--muted);font-size:13px"> • Potensial: </span>
+      <span style="color:var(--green);font-weight:700" id="mines-potential">0</span>
+    </div>
+    <div class="mines-count-selector" id="mines-count-btns">
+      <div class="mine-count-btn active" onclick="setMineCount(1,this)">1💣</div>
+      <div class="mine-count-btn" onclick="setMineCount(3,this)">3💣</div>
+      <div class="mine-count-btn" onclick="setMineCount(5,this)">5💣</div>
+      <div class="mine-count-btn" onclick="setMineCount(10,this)">10💣</div>
+      <div class="mine-count-btn" onclick="setMineCount(15,this)">15💣</div>
+    </div>
+    <div class="mines-board" id="mines-board"></div>
+    <div class="min-bet-note" style="margin-top:12px">⚠️ Minimum bet: 1,000 so'm</div>
+    <div class="bet-row" style="margin-top:8px">
+      <input type="number" class="bet-input" id="mines-bet" placeholder="Bet (min 1000)" value="1000" min="1000">
+    </div>
+    <div class="bet-row">
+      <button class="btn-game btn-play" id="mines-play-btn" onclick="startMines()">O'YINNI BOSHLASH</button>
+      <button class="btn-game btn-cashout" id="mines-cashout-btn" onclick="cashoutMines()">NAQD OLISH 💰</button>
+    </div>
+    <div style="margin-top:10px;text-align:center">
+      <button onclick="closeModal('mines')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px">← Orqaga</button>
+    </div>
+  </div>
+</div>
+
+<!-- APPLE -->
+<div class="modal-overlay" id="modal-apple">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🍎 Apple of Fortune</div>
+    <div style="margin-bottom:12px;text-align:center">
+      <span style="color:var(--gold);font-weight:700;font-size:18px" id="apple-mult-display">x1.00</span>
+      <span style="color:var(--muted);font-size:13px"> • </span>
+      <span style="color:var(--green);font-weight:700" id="apple-potential">0</span>
+    </div>
+    <div class="apple-board" id="apple-board"></div>
+    <div class="min-bet-note">⚠️ Minimum bet: 1,000 so'm</div>
+    <div class="bet-row">
+      <input type="number" class="bet-input" id="apple-bet" placeholder="Bet (min 1000)" value="1000" min="1000">
+    </div>
+    <div class="bet-row">
+      <button class="btn-game btn-play" id="apple-play-btn" onclick="startApple()">O'YINNI BOSHLASH</button>
+      <button class="btn-game btn-cashout" id="apple-cashout-btn" onclick="cashoutApple()">NAQD OLISH 💰</button>
+    </div>
+    <div style="margin-top:10px;text-align:center">
+      <button onclick="closeModal('apple')" style="background:none;border:none;color:var(--muted);cursor:pointer;font-size:14px">← Orqaga</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API = 'https://twatokenuzabc-production.up.railway.app/api';
+const LS_TOKEN = 'casino_token';
+const LS_USER = 'casino_user';
+
+let token = localStorage.getItem(LS_TOKEN);
+let userData = JSON.parse(localStorage.getItem(LS_USER) || '{}');
+
+// ===== AUTH =====
+async function doLogin() {
+  const username = document.getElementById('login-username').value.trim();
+  const password = document.getElementById('login-password').value;
+  const errEl = document.getElementById('login-error');
+  errEl.style.display = 'none';
+
+  if (!username || !password) { errEl.textContent = 'Login va parolni kiriting!'; errEl.style.display = 'block'; return; }
+
+  try {
+    const r = await fetch(`${API}/auth/login`, {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({username, password})
+    });
+    const data = await r.json();
+    if (r.ok) {
+      token = data.access_token;
+      userData = data;
+      localStorage.setItem(LS_TOKEN, token);
+      localStorage.setItem(LS_USER, JSON.stringify(data));
+      showApp();
+    } else {
+      errEl.textContent = data.detail || 'Login yoki parol noto\'g\'ri';
+      errEl.style.display = 'block';
+    }
+  } catch(e) {
+    errEl.textContent = 'Server bilan bog\'lanib bo\'lmadi';
+    errEl.style.display = 'block';
+  }
+}
+
+document.getElementById('login-password').addEventListener('keypress', e => { if(e.key==='Enter') doLogin(); });
+
+function doLogout() {
+  if(!confirm('Akkauntdan chiqmoqchimisiz?')) return;
+  localStorage.removeItem(LS_TOKEN);
+  localStorage.removeItem(LS_USER);
+  location.reload();
+}
+
+function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  updateBalance(userData.balance || 0);
+  initStars();
+  initMinesBoard();
+  initAppleBoard();
+}
+
+if (token) showApp();
+
+async function apiFetch(endpoint, options={}) {
+  const r = await fetch(`${API}${endpoint}`, {
+    ...options,
+    headers: {'Content-Type':'application/json','Authorization':`Bearer ${token}`, ...(options.headers||{})}
+  });
+  if (r.status === 401) { doLogout(); return null; }
+  return r;
+}
+
+function updateBalance(bal) {
+  const f = Number(bal).toLocaleString('uz-UZ');
+  document.getElementById('topbar-balance').textContent = `💰 ${f}`;
+  document.getElementById('profile-balance').textContent = `${f} so'm`;
+  userData.balance = bal;
+  localStorage.setItem(LS_USER, JSON.stringify(userData));
+}
+
+async function refreshBalance() {
+  const r = await apiFetch('/users/me');
+  if (!r) return;
+  const d = await r.json();
+  updateBalance(d.balance);
+  showToast('💰 Balans yangilandi', '');
+}
+
+// ===== MODALS =====
+function openModal(id) { document.getElementById(id).classList.add('active'); }
+function closeModal(id) { document.getElementById(id.startsWith('modal-')?id:'modal-'+id).classList.remove('active'); }
+function openGame(game) { document.getElementById(`modal-${game}`).classList.add('active'); }
+
+// ===== NAV =====
+function showPage(name, el) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById(`page-${name}`).classList.add('active');
+  el.classList.add('active');
+}
+
+// ===== TOAST =====
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `toast show ${type}`;
+  setTimeout(()=>t.classList.remove('show'), 3000);
+}
+
+// ===== PROFILE =====
+async function loadProfile() {
+  const r = await apiFetch('/users/me');
+  if (!r) return;
+  const d = await r.json();
+  document.getElementById('profile-username').textContent = d.username;
+  document.getElementById('stat-wins').textContent = `${Number(d.total_wins).toLocaleString()} so'm`;
+  document.getElementById('stat-losses').textContent = `${Number(d.total_losses).toLocaleString()} so'm`;
+  updateBalance(d.balance);
+}
+
+// ===== DEPOSIT =====
+function showDepositModal() { openModal('modal-deposit'); }
+
+async function submitDeposit() {
+  const amount = parseInt(document.getElementById('dep-amount').value);
+  if (!amount || amount < 10000) { showToast('❌ Minimum 10,000 so\'m!', 'loss'); return; }
+  closeModal('modal-deposit');
+  showToast('✅ So\'rov botga yuborildi!', 'win');
+}
+
+// ===== WITHDRAW =====
+function showWithdrawModal() { openModal('modal-withdraw'); }
+
+async function submitWithdraw() {
+  const amount = parseInt(document.getElementById('with-amount').value);
+  const card = document.getElementById('with-card').value.trim();
+  if (!amount || amount < 10000) { showToast('❌ Minimum 10,000 so\'m!', 'loss'); return; }
+  if (!card || card.length < 16) { showToast('❌ To\'g\'ri karta raqami kiriting!', 'loss'); return; }
+
+  const r = await apiFetch('/payments/withdrawal/request', {
+    method:'POST',
+    body: JSON.stringify({amount, wallet_address: card})
+  });
+  if (!r) return;
+  const data = await r.json();
+
+  if (r.ok) {
+    closeModal('modal-withdraw');
+    updateBalance(data.new_balance || userData.balance - amount);
+    showToast('✅ Yechish so\'rovi yuborildi!', 'win');
+  } else {
+    showToast(`❌ ${data.detail || 'Xatolik'}`, 'loss');
+  }
+}
+
+// ===== PROMO =====
+async function applyPromo() {
+  const code = document.getElementById('promo-input').value.trim().toUpperCase();
+  if (!code) { showToast('❌ Promokod kiriting!', 'loss'); return; }
+
+  const r = await apiFetch('/promocodes/apply', {
+    method:'POST',
+    body: JSON.stringify({code, deposit_amount: 0})
+  });
+  if (!r) return;
+  const data = await r.json();
+
+  if (r.ok) {
+    closeModal('modal-promo');
+    updateBalance((userData.balance||0) + (data.bonus_received||0));
+    showToast(`🎉 +${Number(data.bonus_received).toLocaleString()} so'm bonus!`, 'win');
+  } else {
+    showToast(`❌ ${data.detail || 'Noto\'g\'ri promokod'}`, 'loss');
+  }
+}
+
+// ===== CHANGE PASSWORD =====
+async function changePassword() {
+  const oldPass = document.getElementById('old-password').value;
+  const newPass = document.getElementById('new-password').value;
+  const confirmPass = document.getElementById('confirm-password').value;
+
+  if (!oldPass || !newPass) { showToast('❌ Barcha maydonlarni to\'ldiring!', 'loss'); return; }
+  if (newPass.length < 8) { showToast('❌ Parol kamida 8 belgi bo\'lsin!', 'loss'); return; }
+  if (newPass !== confirmPass) { showToast('❌ Parollar mos emas!', 'loss'); return; }
+
+  const r = await apiFetch('/users/change-password', {
+    method:'POST',
+    body: JSON.stringify({old_password: oldPass, new_password: newPass})
+  });
+  if (!r) return;
+
+  if (r.ok) {
+    closeModal('modal-password');
+    showToast('✅ Parol muvaffaqiyatli yangilandi!', 'win');
+    document.getElementById('old-password').value = '';
+    document.getElementById('new-password').value = '';
+    document.getElementById('confirm-password').value = '';
+  } else {
+    const d = await r.json();
+    showToast(`❌ ${d.detail || 'Xatolik'}`, 'loss');
+  }
+}
+
+// ===== HISTORY =====
+async function loadHistory() {
+  const r = await apiFetch('/users/game-history');
+  if (!r) return;
+  const data = await r.json();
+  const icons = {aviator:'✈️', mines:'💣', apple_fortune:'🍎'};
+  const names = {aviator:'Aviator', mines:'Mines', apple_fortune:'Apple Fortune'};
+  const container = document.getElementById('history-list');
+  container.innerHTML = data.length === 0
+    ? '<div style="text-align:center;color:var(--muted);padding:40px">O\'yin tarixi yo\'q</div>'
+    : data.map(s=>`
+    <div class="history-item">
+      <div class="history-icon">${icons[s.game_type]||'🎮'}</div>
+      <div class="history-info">
+        <div class="history-game">${names[s.game_type]||s.game_type}</div>
+        <div class="history-date">${new Date(s.created_at).toLocaleDateString('uz-UZ')}</div>
+      </div>
+      <div class="history-amount ${s.result==='win'?'stat-win':'stat-loss'}">
+        ${s.result==='win'?'+':'-'}${Number(s.result==='win'?s.win_amount:s.bet_amount).toLocaleString()}
+        <div style="font-size:11px;color:var(--muted)">${s.multiplier}x</div>
+      </div>
+    </div>`).join('');
+}
+
+// ===== AVIATOR =====
+let aviatorState = {active:false, multiplier:1, crashPoint:0, gameId:null, interval:null};
+
+function initStars() {
+  const c = document.getElementById('stars-container');
+  for(let i=0;i<50;i++){
+    const s = document.createElement('div'); s.className='star';
+    s.style.left=Math.random()*100+'%'; s.style.top=Math.random()*100+'%';
+    s.style.animationDelay=Math.random()*2+'s'; c.appendChild(s);
+  }
+}
+
+function setAviatorBet(a) { document.getElementById('avi-bet').value=a; }
+
+async function startAviator() {
+  const bet = parseFloat(document.getElementById('avi-bet').value);
+  const autoCashout = parseFloat(document.getElementById('avi-autocashout').value)||null;
+  if (!bet || bet < 1000) return showToast('❌ Minimum bet 1,000 so\'m!', 'loss');
+
+  const r = await apiFetch('/games/aviator/start', {method:'POST', body:JSON.stringify({bet_amount:bet, auto_cashout:autoCashout})});
+  if (!r) return;
+  if (!r.ok) { const e=await r.json(); return showToast(e.detail,'loss'); }
+  const data = await r.json();
+
+  aviatorState = {active:true, multiplier:1, crashPoint:data.crash_point, gameId:data.game_id, bet};
+  updateBalance(userData.balance - bet);
+
+  document.getElementById('avi-play-btn').style.display='none';
+  document.getElementById('avi-cashout-btn').style.display='flex';
+  document.getElementById('avi-status').textContent='Uchyapti!';
+  document.getElementById('crash-overlay').style.display='none';
+  document.getElementById('plane').textContent='✈️';
+
+  animateAviator(autoCashout);
+}
+
+function animateAviator(autoCashout) {
+  const plane = document.getElementById('plane');
+  const multEl = document.getElementById('avi-multiplier');
+  const sky = document.getElementById('aviator-sky');
+  let tick=0, x=30, y=30;
+
+  aviatorState.interval = setInterval(async()=>{
+    tick++;
+    const speed = 1+(tick*0.0008);
+    aviatorState.multiplier = Math.round((aviatorState.multiplier*(1+0.008*speed))*100)/100;
+
+    x = Math.min(x+1.5, sky.offsetWidth-50);
+    y = Math.min(y+0.8, sky.offsetHeight-50);
+    plane.style.left=x+'px'; plane.style.bottom=(sky.offsetHeight-y)+'px';
+    plane.style.transform='rotate(-15deg)';
+
+    const btn = document.getElementById('avi-cashout-btn');
+    btn.textContent=`NAQD OLISH ${aviatorState.multiplier}x 💰`;
+    multEl.textContent=aviatorState.multiplier.toFixed(2)+'x';
+    multEl.style.color=aviatorState.multiplier>2?'var(--green)':aviatorState.multiplier>1.5?'var(--gold)':'white';
+
+    if(autoCashout && aviatorState.multiplier >= autoCashout) { cashoutAviator(); return; }
+
+    if(aviatorState.multiplier >= aviatorState.crashPoint) {
+      clearInterval(aviatorState.interval); aviatorState.active=false;
+      plane.textContent='💥';
+      document.getElementById('crash-overlay').style.display='flex';
+      document.getElementById('crash-text').textContent=`CRASHED @ ${aviatorState.crashPoint}x`;
+      multEl.style.color='var(--red)';
+      document.getElementById('avi-play-btn').style.display='flex';
+      document.getElementById('avi-cashout-btn').style.display='none';
+      showToast(`💥 Qulab tushdi @ ${aviatorState.crashPoint}x`, 'loss');
+      setTimeout(()=>{
+        plane.textContent='✈️'; plane.style.left='30px'; plane.style.bottom='30px'; plane.style.transform='';
+        multEl.textContent='1.00x'; multEl.style.color='white';
+        document.getElementById('avi-status').textContent='Boshlash uchun bet kiriting';
+        document.getElementById('crash-overlay').style.display='none';
+      },3000);
+    }
+  },100);
+}
+
+async function cashoutAviator() {
+  if(!aviatorState.active) return;
+  clearInterval(aviatorState.interval); aviatorState.active=false;
+  const mult = aviatorState.multiplier;
+  const win = Math.round(aviatorState.bet * mult);
+  updateBalance(userData.balance + win);
+  document.getElementById('avi-play-btn').style.display='flex';
+  document.getElementById('avi-cashout-btn').style.display='none';
+  document.getElementById('avi-status').textContent='Boshlash uchun bet kiriting';
+  showToast(`🎉 +${win.toLocaleString()} so'm (${mult}x)`, 'win');
+  apiFetch('/games/aviator/cashout',{method:'POST',body:JSON.stringify({session_id:aviatorState.gameId})}).catch(()=>{});
+}
+
+// ===== MINES =====
+let minesState = {active:false, gameId:null, mineCount:1, revealed:[], multiplier:1, bet:0};
+
+function initMinesBoard() {
+  const board = document.getElementById('mines-board'); board.innerHTML='';
+  for(let i=0;i<25;i++){
+    const cell=document.createElement('div'); cell.className='mine-cell';
+    cell.textContent='💎'; cell.dataset.index=i;
+    cell.onclick=()=>clickMineCell(i); board.appendChild(cell);
+  }
+}
+
+function setMineCount(n, el) {
+  minesState.mineCount=n;
+  document.querySelectorAll('.mine-count-btn').forEach(b=>b.classList.remove('active'));
+  if(el) el.classList.add('active');
+}
+
+async function startMines() {
+  const bet = parseFloat(document.getElementById('mines-bet').value);
+  if(!bet || bet<1000) return showToast('❌ Minimum bet 1,000 so\'m!','loss');
+  const r = await apiFetch('/games/mines/start',{method:'POST',body:JSON.stringify({bet_amount:bet,mine_count:minesState.mineCount})});
+  if(!r) return;
+  if(!r.ok){const e=await r.json();return showToast(e.detail,'loss');}
+  const data=await r.json();
+  minesState={active:true,gameId:data.game_id,mineCount:minesState.mineCount,revealed:[],multiplier:1,bet};
+  updateBalance(userData.balance-bet);
+  initMinesBoard();
+  document.getElementById('mines-play-btn').style.display='none';
+  document.getElementById('mines-cashout-btn').style.display='flex';
+  document.querySelectorAll('.mine-count-btn').forEach(b=>b.style.pointerEvents='none');
+}
+
+async function clickMineCell(index) {
+  if(!minesState.active||minesState.revealed.includes(index)) return;
+  const cell=document.querySelector(`.mine-cell[data-index="${index}"]`);
+  cell.style.pointerEvents='none';
+  const r=await apiFetch('/games/mines/reveal',{method:'POST',body:JSON.stringify({cell_index:index})});
+  if(!r) return;
+  const data=await r.json();
+  if(data.hit_mine){
+    cell.textContent='💣'; cell.classList.add('mine','revealed');
+    if(data.mines) data.mines.forEach(mi=>{
+      const mc=document.querySelector(`.mine-cell[data-index="${mi}"]`);
+      if(mc){mc.textContent='💣';mc.classList.add('mine','revealed');}
+    });
+    showToast(`💥 Minaga tegdingiz! -${minesState.bet.toLocaleString()}`, 'loss');
+    endMinesGame();
+  } else {
+    cell.textContent='💎'; cell.classList.add('safe','revealed');
+    minesState.revealed.push(index); minesState.multiplier=data.multiplier;
+    document.getElementById('mines-multiplier-display').textContent=`x${data.multiplier}`;
+    document.getElementById('mines-potential').textContent=`${Number(data.potential_win).toLocaleString()} so'm`;
+    document.getElementById('mines-cashout-btn').textContent=`NAQD OLISH ${data.multiplier}x 💰`;
+  }
+}
+
+async function cashoutMines() {
+  if(!minesState.active) return;
+  const r=await apiFetch('/games/mines/cashout',{method:'POST'});
+  if(!r) return;
+  const data=await r.json();
+  updateBalance(data.new_balance);
+  showToast(`🎉 +${Number(data.win_amount).toLocaleString()} so'm (${data.multiplier}x)`,'win');
+  endMinesGame();
+}
+
+function endMinesGame() {
+  minesState.active=false;
+  document.getElementById('mines-play-btn').style.display='flex';
+  document.getElementById('mines-cashout-btn').style.display='none';
+  document.querySelectorAll('.mine-count-btn').forEach(b=>b.style.pointerEvents='');
+  document.getElementById('mines-multiplier-display').textContent='x1.00';
+  document.getElementById('mines-potential').textContent='0';
+  setTimeout(initMinesBoard,2000);
+}
+
+// ===== APPLE =====
+let appleState={active:false,currentRow:0,bet:0};
+
+function initAppleBoard(){
+  const board=document.getElementById('apple-board'); board.innerHTML='';
+  for(let row=0;row<5;row++){
+    const wrapper=document.createElement('div'); wrapper.className='apple-row-wrapper';
+    const rowEl=document.createElement('div'); rowEl.className='apple-row';
+    for(let col=0;col<3;col++){
+      const cell=document.createElement('div'); cell.className='apple-cell inactive';
+      cell.textContent='🍎'; cell.dataset.row=row; cell.dataset.col=col;
+      cell.onclick=()=>clickAppleCell(row,col); rowEl.appendChild(cell);
+    }
+    const mult=document.createElement('div'); mult.className='row-multiplier';
+    mult.id=`row-mult-${row}`; mult.textContent=`x${(Math.pow(1.5,row+1)*0.95).toFixed(2)}`;
+    wrapper.appendChild(rowEl); wrapper.appendChild(mult); board.appendChild(wrapper);
+  }
+}
+
+async function startApple(){
+  const bet=parseFloat(document.getElementById('apple-bet').value);
+  if(!bet||bet<1000) return showToast('❌ Minimum bet 1,000 so\'m!','loss');
+  const r=await apiFetch('/games/apple/start',{method:'POST',body:JSON.stringify({bet_amount:bet})});
+  if(!r) return;
+  if(!r.ok){const e=await r.json();return showToast(e.detail,'loss');}
+  appleState={active:true,currentRow:0,bet};
+  updateBalance(userData.balance-bet);
+  initAppleBoard(); activateAppleRow(0);
+  document.getElementById('apple-play-btn').style.display='none';
+  document.getElementById('apple-cashout-btn').style.display='flex';
+}
+
+function activateAppleRow(row){
+  document.querySelectorAll('.apple-cell').forEach(c=>{
+    const r=parseInt(c.dataset.row);
+    if(r===row){c.classList.remove('inactive');c.classList.add('active-row');}
+    else if(r>row){c.classList.add('inactive');c.classList.remove('active-row');}
+  });
+}
+
+async function clickAppleCell(row,col){
+  if(!appleState.active||row!==appleState.currentRow) return;
+  const r=await apiFetch('/games/apple/choose',{method:'POST',body:JSON.stringify({row,col})});
+  if(!r) return;
+  const data=await r.json();
+  if(data.row_result) data.row_result.forEach((safe,c)=>{
+    const rc=document.querySelector(`.apple-cell[data-row="${row}"][data-col="${c}"]`);
+    if(rc){rc.textContent=safe?'✅':'🔴';rc.classList.add(safe?'safe':'bad','revealed');rc.classList.remove('active-row','inactive');}
+  });
+  if(!data.is_safe){
+    showToast(`🔴 Qizil olma! -${appleState.bet.toLocaleString()}`,'loss'); endAppleGame();
+  } else {
+    appleState.currentRow=data.next_row;
+    document.getElementById('apple-mult-display').textContent=`x${data.multiplier}`;
+    document.getElementById('apple-potential').textContent=`${Number(data.potential_win).toLocaleString()} so'm`;
+    document.getElementById('apple-cashout-btn').textContent=`NAQD OLISH ${data.multiplier}x 💰`;
+    if(data.game_complete){
+      updateBalance(userData.balance+data.win_amount);
+      showToast(`🎉 Barcha qavatlar! +${Number(data.win_amount).toLocaleString()} so'm`,'win'); endAppleGame();
+    } else { activateAppleRow(data.next_row); }
+  }
+}
+
+async function cashoutApple(){
+  if(!appleState.active) return;
+  const r=await apiFetch('/games/apple/cashout',{method:'POST'});
+  if(!r) return;
+  const data=await r.json();
+  updateBalance(data.new_balance);
+  showToast(`🎉 +${Number(data.win_amount).toLocaleString()} so'm (${data.multiplier}x)`,'win');
+  endAppleGame();
+}
+
+function endAppleGame(){
+  appleState.active=false;
+  document.getElementById('apple-play-btn').style.display='flex';
+  document.getElementById('apple-cashout-btn').style.display='none';
+  document.getElementById('apple-mult-display').textContent='x1.00';
+  document.getElementById('apple-potential').textContent='0';
+  setTimeout(initAppleBoard,2000);
+}
+
+if(token){ initMinesBoard(); initAppleBoard(); }
+</script>
+</body>
+</html>
