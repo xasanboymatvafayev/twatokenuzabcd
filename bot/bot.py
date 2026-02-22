@@ -100,64 +100,36 @@ def confirm_deposit_keyboard(amount: int, real_amount: int, card: str):
 async def cmd_start(message: types.Message, state: FSMContext):
     await state.clear()
     user_id = str(message.from_user.id)
-    result = await api_register(user_id)
 
-    if not result:
-        await message.answer("❌ Server bilan bog'lanishda xatolik. Qayta urinib ko'ring.")
-        return
+    # Har doim parol bilan yaratish/olish
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                f"{API_BASE}/auth/delete-and-recreate",
+                json={"telegram_id": user_id, "secret": SECRET},
+                timeout=aiohttp.ClientTimeout(total=10)
+            ) as resp:
+                data = await resp.json()
+        
+        username = data.get("username", f"user_{user_id}")
+        password = data.get("password", "")
+        balance = data.get("balance", 0)
 
-    if result.get("exists"):
-        # Eski user - parolni reset qilib ber
-        try:
-            async with aiohttp.ClientSession() as session:
-                async with session.post(
-                    f"{API_BASE}/auth/reset-my-password",
-                    json={"telegram_id": user_id, "secret": SECRET},
-                    timeout=aiohttp.ClientTimeout(total=10)
-                ) as resp:
-                    reset_data = await resp.json()
-            new_pass = reset_data.get("password", "")
-        except Exception:
-            new_pass = ""
-
-        if new_pass:
-            await message.answer(
-                f"👋 *Xush kelibsiz qaytib!*\n\n"
-                f"🔄 Parolingiz yangilandi:\n\n"
-                f"━━━━━━━━━━━━━━━━\n"
-                f"👤 Login: `{result.get('username', user_id)}`\n"
-                f"🔑 Parol: `{new_pass}`\n"
-                f"━━━━━━━━━━━━━━━━\n\n"
-                f"⚠️ Bu parolni saqlang!\n"
-                f"💰 Balans: *{result.get('balance', 0):,}* so'm",
-                parse_mode="Markdown",
-                reply_markup=main_keyboard()
-            )
-        else:
-            await message.answer(
-                f"👋 *Xush kelibsiz!*\n\n"
-                f"👤 Login: `{result.get('username', user_id)}`\n"
-                f"💰 Balans: *{result.get('balance', 0):,}* so'm\n\n"
-                f"Parolni olish uchun /mypassword yozing.",
-                parse_mode="Markdown",
-                reply_markup=main_keyboard()
-            )
-    else:
-        username = result.get('username', user_id)
-        password = result.get('password', '-')
         await message.answer(
-            f"🎰 *Casino'ga xush kelibsiz!*\n\n"
-            f"✅ Hisobingiz yaratildi!\n\n"
+            f"🎰 *Casino - Xush kelibsiz!*\n\n"
             f"━━━━━━━━━━━━━━━━\n"
             f"👤 Login: `{username}`\n"
-            f"🔐 Parol: `{password}`\n"
+            f"🔑 Parol: `{password}`\n"
             f"━━━━━━━━━━━━━━━━\n\n"
+            f"💰 Balans: *{balance:,}* so'm\n\n"
             f"⚠️ Bu malumotlarni saqlang!\n"
-            f"Web Appga kirish uchun ishlatiladi.\n\n"
-            f"Balans toldirish uchun /deposit yozing.",
+            f"Web Appga kirish uchun ishlatiladi.",
             parse_mode="Markdown",
             reply_markup=main_keyboard()
         )
+    except Exception as e:
+        logging.error(f"cmd_start error: {e}")
+        await message.answer("❌ Server bilan bog'lanishda xatolik. Qayta urinib ko'ring.")
 
 # ============= CANCEL =============
 @dp.callback_query(F.data == "cancel")
