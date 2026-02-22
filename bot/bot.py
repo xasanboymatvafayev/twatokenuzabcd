@@ -562,9 +562,10 @@ async def cmd_mypassword(message: types.Message):
                 json={"telegram_id": user_id, "secret": SECRET},
                 timeout=aiohttp.ClientTimeout(total=10)
             ) as resp:
+                status = resp.status
                 data = await resp.json()
 
-        if resp.status == 200:
+        if status == 200:
             await message.answer(
                 f"🔐 *Yangi parolingiz:*\n\n"
                 f"👤 Login: `{data.get('username')}`\n"
@@ -573,6 +574,7 @@ async def cmd_mypassword(message: types.Message):
                 parse_mode="Markdown"
             )
         else:
-            await message.answer("❌ Xatolik yuz berdi.")
+            await message.answer(f"❌ Xatolik: {data.get('detail', 'Nomalum xato')}")
     except Exception as e:
-        await message.answer("❌ Server bilan bog'lanib bo'lmadi.")
+        logging.error(f"mypassword error: {e}")
+        await message.answer(f"❌ Server bilan bog'lanib bo'lmadi: {e}")
