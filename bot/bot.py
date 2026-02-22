@@ -549,4 +549,31 @@ async def main():
 
 if __name__ == "__main__":
     asyncio.run(main())
-    
+
+
+# ============= PAROLNI YANGILASH =============
+@dp.message(Command("mypassword"))
+async def cmd_mypassword(message: types.Message):
+    """Foydalanuvchi yangi parol oladi"""
+    user_id = str(message.from_user.id)
+    try:
+        async with aiohttp.ClientSession() as session:
+            async with session.post(
+                f"{API_BASE}/auth/reset-my-password",
+                json={"telegram_id": user_id, "secret": SECRET},
+                timeout=aiohttp.ClientTimeout(total=10)
+            ) as resp:
+                data = await resp.json()
+
+        if resp.status == 200:
+            await message.answer(
+                f"🔐 *Yangi parolingiz:*\n\n"
+                f"👤 Login: `{data.get('username')}`\n"
+                f"🔑 Parol: `{data.get('password')}`\n\n"
+                f"⚠️ Bu parolni saqlang!",
+                parse_mode="Markdown"
+            )
+        else:
+            await message.answer("❌ Xatolik yuz berdi.")
+    except Exception as e:
+        await message.answer("❌ Server bilan bog'lanib bo'lmadi.")
