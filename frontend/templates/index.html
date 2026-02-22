@@ -554,7 +554,7 @@ function showDepositModal() { openModal('modal-deposit'); }
 
 async function submitDeposit() {
   const amount = parseInt(document.getElementById('dep-amount').value);
-  if (!amount || amount < 10000) { showToast('❌ Minimum 10,000 so\'m!', 'loss'); return; }
+  if (!amount || amount < 10000) { showToast('❌ Minimum 10,000 so'm!', 'loss'); return; }
   closeModal('modal-deposit');
   showToast('✅ So\'rov botga yuborildi!', 'win');
 }
