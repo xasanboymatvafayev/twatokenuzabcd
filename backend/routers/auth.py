@@ -3,17 +3,17 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from pydantic import BaseModel
 from datetime import datetime
+import uuid
 
 from core.database import get_db
 from core.security import hash_password, verify_password, create_access_token
 from models.models import User
-import random, string
 
 router = APIRouter()
 
-def generate_password(length=10):
-    chars = string.ascii_letters + string.digits
-    return ''.join(random.choices(chars, k=length))
+def generate_password():
+    # UUID4 ning birinchi 8 ta belgisi - qisqa va oddiy
+    return str(uuid.uuid4())[:8]
 
 class LoginRequest(BaseModel):
     username: str
@@ -57,8 +57,7 @@ async def telegram_register(request: TelegramRegisterRequest, db: AsyncSession =
     user = result.scalar_one_or_none()
 
     if user:
-        # Eski user — agar plain_password saqlanmagan bo'lsa, yangi parol beramiz
-        # Parolni reset qilish: /reset_password buyrug'i bilan
+        # ESKI USER - parolni O'ZGARTIRMAYMIZ
         return {
             "exists": True,
             "username": user.username,
@@ -67,9 +66,9 @@ async def telegram_register(request: TelegramRegisterRequest, db: AsyncSession =
             "created_at": str(user.created_at)
         }
 
-    # Yangi foydalanuvchi
+    # YANGI USER - faqat 1 marta parol yaratamiz
     username = f"user_{request.telegram_id}"
-    password = generate_password(10)
+    password = generate_password()
 
     new_user = User(
         telegram_id=request.telegram_id,
@@ -90,7 +89,7 @@ async def telegram_register(request: TelegramRegisterRequest, db: AsyncSession =
 
 @router.post("/reset-my-password")
 async def reset_password(request: TelegramRegisterRequest, db: AsyncSession = Depends(get_db)):
-    """Foydalanuvchi parolini qayta generatsiya qilish"""
+    """Foydalanuvchi o'zi xohlasa parolini yangilaydi"""
     from core.config import settings
     if request.secret != settings.SECRET_KEY[:20]:
         raise HTTPException(status_code=403, detail="Invalid secret")
@@ -98,21 +97,17 @@ async def reset_password(request: TelegramRegisterRequest, db: AsyncSession = De
     result = await db.execute(select(User).where(User.telegram_id == request.telegram_id))
     user = result.scalar_one_or_none()
     if not user:
-        raise HTTPException(status_code=404, detail="User not found")
+        raise HTTPException(status_code=404, detail="User topilmadi")
 
-    new_password = generate_password(10)
+    new_password = generate_password()
     user.password_hash = hash_password(new_password)
     await db.commit()
 
-    return {
-        "username": user.username,
-        "password": new_password
-    }
-
+    return {"username": user.username, "password": new_password}
 
 @router.post("/delete-and-recreate")
 async def delete_and_recreate(request: TelegramRegisterRequest, db: AsyncSession = Depends(get_db)):
-    """Eski userni o'chirib yangi parol bilan yaratadi (balans saqlanadi)"""
+    """Faqat birinchi marta ishlatiladi - eski broken userlarni tuzatish"""
     from core.config import settings
     if request.secret != settings.SECRET_KEY[:20]:
         raise HTTPException(status_code=403, detail="Invalid secret")
@@ -120,8 +115,8 @@ async def delete_and_recreate(request: TelegramRegisterRequest, db: AsyncSession
     result = await db.execute(select(User).where(User.telegram_id == request.telegram_id))
     user = result.scalar_one_or_none()
 
-    new_password = generate_password(10)
-    
+    new_password = generate_password()
+
     if user:
         old_balance = user.balance
         user.password_hash = hash_password(new_password)
