@@ -101,32 +101,41 @@ async def cmd_start(message: types.Message, state: FSMContext):
     await state.clear()
     user_id = str(message.from_user.id)
 
-    # Har doim parol bilan yaratish/olish
     try:
         async with aiohttp.ClientSession() as session:
             async with session.post(
-                f"{API_BASE}/auth/delete-and-recreate",
+                f"{API_BASE}/auth/telegram-register",
                 json={"telegram_id": user_id, "secret": SECRET},
                 timeout=aiohttp.ClientTimeout(total=10)
             ) as resp:
                 data = await resp.json()
-        
-        username = data.get("username", f"user_{user_id}")
-        password = data.get("password", "")
-        balance = data.get("balance", 0)
 
-        await message.answer(
-            f"🎰 *Casino - Xush kelibsiz!*\n\n"
-            f"━━━━━━━━━━━━━━━━\n"
-            f"👤 Login: `{username}`\n"
-            f"🔑 Parol: `{password}`\n"
-            f"━━━━━━━━━━━━━━━━\n\n"
-            f"💰 Balans: *{balance:,}* so'm\n\n"
-            f"⚠️ Bu malumotlarni saqlang!\n"
-            f"Web Appga kirish uchun ishlatiladi.",
-            parse_mode="Markdown",
-            reply_markup=main_keyboard()
-        )
+        if data.get("exists"):
+            # ESKI USER - parol ko'rsatmaymiz
+            await message.answer(
+                f"👋 *Xush kelibsiz qaytib!*\n\n"
+                f"👤 Login: `{data.get('username', user_id)}`\n"
+                f"💰 Balans: *{data.get('balance', 0):,}* so'm\n\n"
+                f"Parolni unutdingizmi? /mypassword yozing.",
+                parse_mode="Markdown",
+                reply_markup=main_keyboard()
+            )
+        else:
+            # YANGI USER - faqat 1 marta parol beramiz
+            username = data.get("username", f"user_{user_id}")
+            password = data.get("password", "")
+            await message.answer(
+                f"🎰 *Casino'ga xush kelibsiz!*\n\n"
+                f"✅ Hisobingiz yaratildi!\n\n"
+                f"━━━━━━━━━━━━━━━━\n"
+                f"👤 Login: `{username}`\n"
+                f"🔑 Parol: `{password}`\n"
+                f"━━━━━━━━━━━━━━━━\n\n"
+                f"⚠️ Bu parolni saqlang!\n"
+                f"Web Appga kirish uchun ishlatiladi.",
+                parse_mode="Markdown",
+                reply_markup=main_keyboard()
+            )
     except Exception as e:
         logging.error(f"cmd_start error: {e}")
         await message.answer("❌ Server bilan bog'lanishda xatolik. Qayta urinib ko'ring.")
