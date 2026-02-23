@@ -9,37 +9,35 @@
 :root { --bg:#0d0f1a; --card:#151828; --card2:#1e2235; --primary:#6c63ff; --gold:#f5c518; --green:#00e676; --red:#ff5252; --text:#e8eaf6; --muted:#8892b0; --border:#2d3561; }
 body { background:var(--bg); color:var(--text); font-family:'Segoe UI',sans-serif; }
 
-/* LOGIN */
 #login-screen { display:flex; align-items:center; justify-content:center; min-height:100vh; }
-.login-box { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:40px; width:380px; }
-.login-title { text-align:center; font-size:24px; font-weight:800; margin-bottom:24px; }
-.form-group { margin-bottom:14px; }
-.form-group label { display:block; font-size:12px; color:var(--muted); margin-bottom:6px; }
-.form-group input { width:100%; background:var(--card2); border:1px solid var(--border); border-radius:8px; padding:11px 14px; color:var(--text); font-size:14px; outline:none; }
-.form-group input:focus { border-color:var(--primary); }
-.btn-login { width:100%; background:var(--primary); color:white; border:none; border-radius:10px; padding:13px; font-size:15px; font-weight:700; cursor:pointer; margin-top:8px; }
-.login-err { color:var(--red); font-size:13px; text-align:center; margin-top:10px; display:none; }
+.login-box { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:40px; width:340px; text-align:center; }
+.login-title { font-size:28px; font-weight:800; margin-bottom:8px; }
+.login-sub { color:var(--muted); font-size:13px; margin-bottom:28px; }
+.login-box input { width:100%; background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:13px 16px; color:var(--text); font-size:15px; outline:none; margin-bottom:14px; }
+.login-box input:focus { border-color:var(--primary); }
+.login-box button { width:100%; background:var(--primary); color:white; border:none; border-radius:10px; padding:13px; font-size:15px; font-weight:700; cursor:pointer; }
+.login-err { color:var(--red); font-size:13px; margin-top:10px; display:none; }
 
-/* LAYOUT */
 #app { display:none; }
-.sidebar { position:fixed; left:0; top:0; width:220px; height:100vh; background:var(--card); border-right:1px solid var(--border); padding:20px 0; display:flex; flex-direction:column; }
+.sidebar { position:fixed; left:0; top:0; width:220px; height:100vh; background:var(--card); border-right:1px solid var(--border); display:flex; flex-direction:column; padding:20px 0; }
 .sidebar-logo { padding:0 20px 20px; font-size:18px; font-weight:800; border-bottom:1px solid var(--border); margin-bottom:10px; }
-.nav-link { display:block; padding:12px 20px; cursor:pointer; color:var(--muted); font-size:14px; transition:all .2s; }
-.nav-link:hover, .nav-link.active { background:var(--card2); color:var(--text); border-right:3px solid var(--primary); }
+.nav-link { display:block; padding:12px 20px; cursor:pointer; color:var(--muted); font-size:14px; transition:all .2s; border-right:3px solid transparent; }
+.nav-link:hover,.nav-link.active { background:var(--card2); color:var(--text); border-right-color:var(--primary); }
 .nav-logout { margin-top:auto; color:var(--red) !important; }
-.main { margin-left:220px; padding:24px; min-height:100vh; }
-.page-header { font-size:22px; font-weight:700; margin-bottom:24px; }
 
+.main { margin-left:220px; padding:24px; }
 .section { display:none; }
 .section.active { display:block; }
+.page-title { font-size:22px; font-weight:700; margin-bottom:20px; }
 
-.stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:16px; margin-bottom:24px; }
+.stats-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:14px; margin-bottom:20px; }
 .stat-card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:18px; }
-.stat-card .label { font-size:12px; color:var(--muted); margin-bottom:8px; }
-.stat-card .value { font-size:24px; font-weight:800; }
+.stat-label { font-size:12px; color:var(--muted); margin-bottom:6px; }
+.stat-value { font-size:24px; font-weight:800; }
 
-.card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px; margin-bottom:20px; }
-.card-title { font-size:16px; font-weight:700; margin-bottom:16px; }
+.card { background:var(--card); border:1px solid var(--border); border-radius:12px; padding:20px; margin-bottom:16px; }
+.card-title { font-size:15px; font-weight:700; margin-bottom:14px; }
+.two-col { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
 
 table { width:100%; border-collapse:collapse; }
 th { text-align:left; padding:10px 12px; font-size:12px; color:var(--muted); border-bottom:1px solid var(--border); }
@@ -49,36 +47,31 @@ tr:last-child td { border:none; }
 .badge { display:inline-block; padding:3px 8px; border-radius:20px; font-size:11px; font-weight:600; }
 .badge-active { background:rgba(0,230,118,.15); color:var(--green); }
 .badge-blocked { background:rgba(255,82,82,.15); color:var(--red); }
-.badge-frozen { background:rgba(245,197,24,.15); color:var(--gold); }
 .badge-pending { background:rgba(108,99,255,.15); color:var(--primary); }
 .badge-approved { background:rgba(0,230,118,.15); color:var(--green); }
 .badge-rejected { background:rgba(255,82,82,.15); color:var(--red); }
 
-.btn { padding:7px 14px; border-radius:8px; border:none; cursor:pointer; font-size:12px; font-weight:600; }
-.btn:hover { opacity:.8; }
+.btn { padding:6px 12px; border-radius:8px; border:none; cursor:pointer; font-size:12px; font-weight:600; }
 .btn-danger { background:rgba(255,82,82,.2); color:var(--red); border:1px solid var(--red); }
 .btn-success { background:rgba(0,230,118,.2); color:var(--green); border:1px solid var(--green); }
 .btn-primary { background:var(--primary); color:white; }
 .btn-gold { background:rgba(245,197,24,.2); color:var(--gold); border:1px solid var(--gold); }
-.btn-sm { padding:4px 8px; font-size:11px; }
 
-input, select, textarea { background:var(--card2); border:1px solid var(--border); color:var(--text); padding:9px 12px; border-radius:8px; font-size:13px; outline:none; }
-input:focus, select:focus { border-color:var(--primary); }
+input,select { background:var(--card2); border:1px solid var(--border); color:var(--text); padding:9px 12px; border-radius:8px; font-size:13px; outline:none; }
+input:focus,select:focus { border-color:var(--primary); }
 
 .form-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
-.form-col { display:flex; flex-direction:column; gap:6px; font-size:12px; color:var(--muted); }
-.form-col input, .form-col select { margin-top:2px; }
+.form-col { display:flex; flex-direction:column; gap:5px; font-size:12px; color:var(--muted); }
 
-.toast { position:fixed; top:20px; right:20px; background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:12px 20px; font-size:14px; z-index:999; opacity:0; transition:opacity .3s; }
+.pay-card { background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:14px; margin-bottom:10px; }
+.pay-info { font-size:13px; line-height:1.9; margin-bottom:10px; }
+.pay-btns { display:flex; gap:8px; }
+
+.empty { text-align:center; color:var(--muted); padding:30px; font-size:14px; }
+
+.toast { position:fixed; top:20px; right:20px; background:var(--card); border:1px solid var(--green); border-radius:10px; padding:12px 20px; z-index:999; opacity:0; transition:opacity .3s; font-size:14px; }
 .toast.show { opacity:1; }
-
-.two-col { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
-
-.payment-card { background:var(--card2); border:1px solid var(--border); border-radius:10px; padding:14px; margin-bottom:10px; }
-.payment-card .pinfo { font-size:13px; margin-bottom:8px; line-height:1.8; }
-.payment-card .pbtns { display:flex; gap:8px; }
-
-.empty { text-align:center; color:var(--muted); padding:40px; }
+.toast.err { border-color:var(--red); }
 </style>
 </head>
 <body>
@@ -86,17 +79,12 @@ input:focus, select:focus { border-color:var(--primary); }
 <!-- LOGIN -->
 <div id="login-screen">
   <div class="login-box">
-    <div class="login-title">👨‍💼 Admin Panel</div>
-    <div class="form-group">
-      <label>Login</label>
-      <input type="text" id="adm-login" placeholder="admin_login">
-    </div>
-    <div class="form-group">
-      <label>Parol</label>
-      <input type="password" id="adm-password" placeholder="••••••••">
-    </div>
-    <button class="btn-login" onclick="doLogin()">Kirish</button>
-    <div class="login-err" id="login-err">Login yoki parol noto'g'ri</div>
+    <div class="login-title">👨‍💼</div>
+    <div class="login-title">Admin Panel</div>
+    <div class="login-sub">Parol bilan kiring</div>
+    <input type="password" id="adm-pass" placeholder="Parol kiriting" onkeypress="if(event.key==='Enter')doLogin()">
+    <button onclick="doLogin()">Kirish →</button>
+    <div class="login-err" id="login-err">❌ Parol noto'g'ri!</div>
   </div>
 </div>
 
@@ -104,86 +92,84 @@ input:focus, select:focus { border-color:var(--primary); }
 <div id="app">
   <div class="sidebar">
     <div class="sidebar-logo">👨‍💼 Admin</div>
-    <a class="nav-link active" onclick="showSection('dashboard',this)">📊 Dashboard</a>
-    <a class="nav-link" onclick="showSection('users',this)">👥 Foydalanuvchilar</a>
-    <a class="nav-link" onclick="showSection('payments',this)">💰 To'lovlar</a>
-    <a class="nav-link" onclick="showSection('promos',this)">🎟 Promokodlar</a>
+    <a class="nav-link active" onclick="nav('dashboard',this)">📊 Dashboard</a>
+    <a class="nav-link" onclick="nav('users',this)">👥 Foydalanuvchilar</a>
+    <a class="nav-link" onclick="nav('payments',this)">💰 To'lovlar</a>
+    <a class="nav-link" onclick="nav('promos',this)">🎟 Promokodlar</a>
     <a class="nav-link nav-logout" onclick="doLogout()">🚪 Chiqish</a>
   </div>
 
   <div class="main">
     <!-- DASHBOARD -->
-    <div class="section active" id="section-dashboard">
-      <div class="page-header">📊 Dashboard</div>
+    <div class="section active" id="sec-dashboard">
+      <div class="page-title">📊 Dashboard</div>
       <div class="stats-grid">
-        <div class="stat-card"><div class="label">Foydalanuvchilar</div><div class="value" id="stat-users">-</div></div>
-        <div class="stat-card"><div class="label">Jami balans</div><div class="value" style="color:var(--gold)" id="stat-balance">-</div></div>
-        <div class="stat-card"><div class="label">Bugungi depozit</div><div class="value" style="color:var(--green)" id="stat-deposits">-</div></div>
-        <div class="stat-card"><div class="label">Bugungi yechish</div><div class="value" style="color:var(--red)" id="stat-withdrawals">-</div></div>
-        <div class="stat-card"><div class="label">Uy foydasi</div><div class="value" style="color:var(--primary)" id="stat-profit">-</div></div>
+        <div class="stat-card"><div class="stat-label">Foydalanuvchilar</div><div class="stat-value" id="s-users">-</div></div>
+        <div class="stat-card"><div class="stat-label">Jami balans</div><div class="stat-value" style="color:var(--gold)" id="s-balance">-</div></div>
+        <div class="stat-card"><div class="stat-label">Bugungi depozit</div><div class="stat-value" style="color:var(--green)" id="s-dep">-</div></div>
+        <div class="stat-card"><div class="stat-label">Bugungi yechish</div><div class="stat-value" style="color:var(--red)" id="s-with">-</div></div>
+        <div class="stat-card"><div class="stat-label">Uy foydasi</div><div class="stat-value" style="color:var(--primary)" id="s-profit">-</div></div>
       </div>
       <div class="two-col">
-        <div class="card">
-          <div class="card-title">🏆 Ko'p yutganlar</div>
-          <table><thead><tr><th>Login</th><th>Yutgan</th></tr></thead><tbody id="top-winners"></tbody></table>
+        <div class="card"><div class="card-title">🏆 Ko'p yutganlar</div>
+          <table><thead><tr><th>Login</th><th>Yutgan</th></tr></thead><tbody id="top-win"></tbody></table>
         </div>
-        <div class="card">
-          <div class="card-title">💸 Ko'p yutqazganlar</div>
-          <table><thead><tr><th>Login</th><th>Yutqazgan</th></tr></thead><tbody id="top-losers"></tbody></table>
+        <div class="card"><div class="card-title">💸 Ko'p yutqazganlar</div>
+          <table><thead><tr><th>Login</th><th>Yutqazgan</th></tr></thead><tbody id="top-loss"></tbody></table>
         </div>
       </div>
     </div>
 
     <!-- USERS -->
-    <div class="section" id="section-users">
-      <div class="page-header">👥 Foydalanuvchilar</div>
+    <div class="section" id="sec-users">
+      <div class="page-title">👥 Foydalanuvchilar</div>
       <div class="card">
-        <div style="display:flex;gap:10px;margin-bottom:16px">
+        <div style="display:flex;gap:10px;margin-bottom:14px">
           <input type="text" id="user-search" placeholder="Login bo'yicha qidirish..." style="flex:1">
           <button class="btn btn-primary" onclick="loadUsers()">Qidirish</button>
         </div>
         <table>
           <thead><tr><th>ID</th><th>Login</th><th>Balans</th><th>Yutgan</th><th>Yutqazgan</th><th>Status</th><th>Amallar</th></tr></thead>
-          <tbody id="users-table"></tbody>
+          <tbody id="users-tbody"></tbody>
         </table>
       </div>
     </div>
 
     <!-- PAYMENTS -->
-    <div class="section" id="section-payments">
-      <div class="page-header">💰 To'lovlar</div>
+    <div class="section" id="sec-payments">
+      <div class="page-title">💰 To'lovlar</div>
       <div class="two-col">
         <div>
-          <div class="card-title" style="margin-bottom:12px">⏳ Kutayotgan depozitlar</div>
-          <div id="pending-deposits"><div class="empty">Kutayotgan so'rovlar yo'q</div></div>
+          <div class="card-title" style="margin-bottom:10px">⏳ Depozitlar</div>
+          <div id="dep-list"><div class="empty">Yo'q</div></div>
         </div>
         <div>
-          <div class="card-title" style="margin-bottom:12px">⏳ Kutayotgan yechishlar</div>
-          <div id="pending-withdrawals"><div class="empty">Kutayotgan so'rovlar yo'q</div></div>
+          <div class="card-title" style="margin-bottom:10px">⏳ Yechishlar</div>
+          <div id="with-list"><div class="empty">Yo'q</div></div>
         </div>
       </div>
     </div>
 
     <!-- PROMOS -->
-    <div class="section" id="section-promos">
-      <div class="page-header">🎟 Promokodlar</div>
+    <div class="section" id="sec-promos">
+      <div class="page-title">🎟 Promokodlar</div>
       <div class="card">
-        <div class="card-title">Yangi promokod yaratish</div>
+        <div class="card-title">Yangi promokod</div>
         <div class="form-row">
-          <div class="form-col">Kod <input type="text" id="promo-code" placeholder="SUMMER2024" style="text-transform:uppercase"></div>
-          <div class="form-col">Turi <select id="promo-type"><option value="percent">Foiz (%)</option><option value="fixed">Miqdor (so'm)</option></select></div>
+          <div class="form-col">Kod <input type="text" id="p-code" placeholder="BONUS2024" style="text-transform:uppercase"></div>
+          <div class="form-col">Turi <select id="p-type"><option value="percent">Foiz %</option><option value="fixed">Miqdor so'm</option></select></div>
         </div>
         <div class="form-row">
-          <div class="form-col">Qiymat <input type="number" id="promo-value" placeholder="10 (foiz) yoki 50000 (so'm)"></div>
-          <div class="form-col">Max foydalanish <input type="number" id="promo-max" placeholder="100"></div>
+          <div class="form-col">Qiymat <input type="number" id="p-val" placeholder="10"></div>
+          <div class="form-col">Max foydalanish <input type="number" id="p-max" placeholder="100"></div>
         </div>
         <button class="btn btn-primary" onclick="createPromo()">Yaratish</button>
       </div>
       <div class="card">
-        <div class="card-title">Mavjud promokodlar</div>
+        <div class="card-title">Promokodlar ro'yxati</div>
         <table>
-          <thead><tr><th>Kod</th><th>Turi</th><th>Qiymat</th><th>Ishlatilgan</th><th>Max</th><th>Status</th></tr></thead>
-          <tbody id="promos-table"></tbody>
+          <thead><tr><th>Kod</th><th>Turi</th><th>Qiymat</th><th>Ishlatilgan</th><th>Max</th><th>Holat</th></tr></thead>
+          <tbody id="promo-tbody"></tbody>
         </table>
       </div>
     </div>
@@ -194,51 +180,31 @@ input:focus, select:focus { border-color:var(--primary); }
 
 <script>
 const API = 'https://twatokenuzabcd-production.up.railway.app/api';
+const ADMIN_PASS = 'salomdunyo1';
 let token = localStorage.getItem('adm_token');
 
 if (token) showApp();
 
-async function doLogin() {
-  const username = document.getElementById('adm-login').value.trim();
-  const password = document.getElementById('adm-password').value;
-  const errEl = document.getElementById('login-err');
-  errEl.style.display = 'none';
-
-  try {
-    const r = await fetch(`${API}/auth/login`, {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({username, password})
-    });
-    const data = await r.json();
-    if (r.ok) {
-      // Check if admin
-      const me = await fetch(`${API}/admin/stats`, {
-        headers:{'Authorization':`Bearer ${data.access_token}`}
-      });
-      if (me.status === 403) {
-        errEl.textContent = 'Admin huquqi yo\'q!';
-        errEl.style.display = 'block';
-        return;
-      }
-      token = data.access_token;
-      localStorage.setItem('adm_token', token);
-      showApp();
-    } else {
-      errEl.textContent = data.detail || 'Noto\'g\'ri ma\'lumotlar';
-      errEl.style.display = 'block';
-    }
-  } catch(e) {
-    errEl.textContent = 'Server bilan bog\'lanib bo\'lmadi';
-    errEl.style.display = 'block';
+function doLogin() {
+  const pass = document.getElementById('adm-pass').value;
+  const err = document.getElementById('login-err');
+  if (pass !== ADMIN_PASS) {
+    err.style.display = 'block';
+    return;
   }
-}
-
-document.addEventListener('keypress', e => { if(e.key==='Enter') doLogin(); });
-
-function showApp() {
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  loadStats();
+  err.style.display = 'none';
+  // Admin tokenini backend dan olish
+  fetch(`${API}/admin/get-token`, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({password: ADMIN_PASS})
+  }).then(r=>r.json()).then(d=>{
+    if(d.access_token) {
+      token = d.access_token;
+      localStorage.setItem('adm_token', token);
+    }
+    showApp();
+  }).catch(()=>showApp()); // token yo'q bo'lsa ham kirsin
 }
 
 function doLogout() {
@@ -246,17 +212,23 @@ function doLogout() {
   location.reload();
 }
 
-function showToast(msg, color='green') {
+function showApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  loadStats();
+}
+
+function showToast(msg, err=false) {
   const t = document.getElementById('toast');
-  t.textContent = msg; t.style.borderColor = color;
-  t.classList.add('show');
+  t.textContent = msg;
+  t.className = 'toast show' + (err?' err':'');
   setTimeout(()=>t.classList.remove('show'), 3000);
 }
 
-function showSection(name, el) {
+function nav(name, el) {
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.nav-link').forEach(n=>n.classList.remove('active'));
-  document.getElementById(`section-${name}`).classList.add('active');
+  document.getElementById(`sec-${name}`).classList.add('active');
   el.classList.add('active');
   if(name==='dashboard') loadStats();
   if(name==='users') loadUsers();
@@ -264,152 +236,133 @@ function showSection(name, el) {
   if(name==='promos') loadPromos();
 }
 
-async function api(url, opts={}) {
+async function req(url, opts={}) {
   try {
-    const r = await fetch(`${API}${url}`, {
-      ...opts, headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`,...(opts.headers||{})}
+    return await fetch(`${API}${url}`, {
+      ...opts,
+      headers:{'Content-Type':'application/json','Authorization':`Bearer ${token}`,...(opts.headers||{})}
     });
-    return r;
-  } catch(e) { showToast('Xatolik!','red'); return null; }
+  } catch(e) { showToast('Xatolik!',true); return null; }
 }
 
-// STATS
 async function loadStats() {
-  const r = await api('/admin/stats');
-  if(!r) return;
+  const r = await req('/admin/stats');
+  if(!r||!r.ok) return;
   const d = await r.json();
-  document.getElementById('stat-users').textContent = d.total_users || 0;
-  document.getElementById('stat-balance').textContent = Number(d.total_balance||0).toLocaleString();
-  document.getElementById('stat-deposits').textContent = Number(d.today_deposits||0).toLocaleString();
-  document.getElementById('stat-withdrawals').textContent = Number(d.today_withdrawals||0).toLocaleString();
-  document.getElementById('stat-profit').textContent = Number(d.house_profit||0).toLocaleString();
-  document.getElementById('top-winners').innerHTML = (d.top_winners||[]).map(u=>
+  document.getElementById('s-users').textContent = d.total_users||0;
+  document.getElementById('s-balance').textContent = Number(d.total_balance||0).toLocaleString();
+  document.getElementById('s-dep').textContent = Number(d.today_deposits||0).toLocaleString();
+  document.getElementById('s-with').textContent = Number(d.today_withdrawals||0).toLocaleString();
+  document.getElementById('s-profit').textContent = Number(d.house_profit||0).toLocaleString();
+  document.getElementById('top-win').innerHTML = (d.top_winners||[]).map(u=>
     `<tr><td>${u.username}</td><td style="color:var(--green)">${Number(u.total_wins).toLocaleString()}</td></tr>`).join('');
-  document.getElementById('top-losers').innerHTML = (d.top_losers||[]).map(u=>
+  document.getElementById('top-loss').innerHTML = (d.top_losers||[]).map(u=>
     `<tr><td>${u.username}</td><td style="color:var(--red)">${Number(u.total_losses).toLocaleString()}</td></tr>`).join('');
 }
 
-// USERS
 async function loadUsers() {
-  const search = document.getElementById('user-search').value||'';
-  const r = await api(`/admin/users?search=${search}`);
-  if(!r) return;
-  const users = await r.json();
-  document.getElementById('users-table').innerHTML = users.length===0
-    ? '<tr><td colspan="7" style="text-align:center;color:var(--muted)">Foydalanuvchi topilmadi</td></tr>'
-    : users.map(u=>`
-    <tr>
+  const s = document.getElementById('user-search').value||'';
+  const r = await req(`/admin/users?search=${s}`);
+  if(!r||!r.ok) return;
+  const data = await r.json();
+  document.getElementById('users-tbody').innerHTML = data.length===0
+    ? '<tr><td colspan="7" class="empty">Topilmadi</td></tr>'
+    : data.map(u=>`<tr>
       <td>${u.id}</td>
-      <td><b>${u.username}</b><br><small style="color:var(--muted)">${u.telegram_id||''}</small></td>
+      <td><b>${u.username}</b><div style="font-size:11px;color:var(--muted)">${u.telegram_id||''}</div></td>
       <td style="color:var(--gold)">${Number(u.balance).toLocaleString()}</td>
       <td style="color:var(--green)">${Number(u.total_wins||0).toLocaleString()}</td>
       <td style="color:var(--red)">${Number(u.total_losses||0).toLocaleString()}</td>
       <td><span class="badge badge-${u.status}">${u.status}</span></td>
-      <td>
-        <button class="btn btn-sm btn-danger" onclick="userAction(${u.id},'block')">Blok</button>
-        <button class="btn btn-sm btn-success" onclick="userAction(${u.id},'unblock')">Ochish</button>
-        <button class="btn btn-sm btn-gold" onclick="addBalance(${u.id})">+Balans</button>
+      <td style="display:flex;gap:4px">
+        <button class="btn btn-danger" onclick="uAction(${u.id},'block')">Blok</button>
+        <button class="btn btn-success" onclick="uAction(${u.id},'unblock')">Ochish</button>
+        <button class="btn btn-gold" onclick="addBal(${u.id})">+Bal</button>
       </td>
     </tr>`).join('');
 }
 
-async function userAction(uid, action) {
-  const r = await api(`/admin/users/${uid}/${action}`, {method:'POST'});
+async function uAction(id, action) {
+  const r = await req(`/admin/users/${id}/${action}`, {method:'POST'});
   if(r&&r.ok) { showToast('✅ Bajarildi'); loadUsers(); }
-  else showToast('❌ Xatolik','red');
+  else showToast('❌ Xatolik',true);
 }
 
-async function addBalance(uid) {
-  const amount = prompt('Qancha so\'m qo\'shish?');
-  if(!amount || isNaN(amount)) return;
-  const r = await api(`/admin/users/${uid}/add-balance`, {method:'POST', body:JSON.stringify({amount:parseFloat(amount)})});
-  if(r&&r.ok) { showToast(`✅ +${Number(amount).toLocaleString()} so'm qo'shildi`); loadUsers(); }
-  else showToast('❌ Xatolik','red');
+async function addBal(id) {
+  const a = prompt("Qancha so'm qo'shish?");
+  if(!a||isNaN(a)) return;
+  const r = await req(`/admin/users/${id}/add-balance`, {method:'POST', body:JSON.stringify({amount:parseFloat(a)})});
+  if(r&&r.ok) { showToast(`✅ +${Number(a).toLocaleString()} so'm`); loadUsers(); }
+  else showToast('❌ Xatolik',true);
 }
 
-// PAYMENTS
 async function loadPayments() {
-  const r = await api('/payments/admin/pending');
-  if(!r) return;
+  const r = await req('/payments/admin/pending');
+  if(!r||!r.ok) return;
   const d = await r.json();
 
-  const deps = (d.deposits||[]);
-  const withs = (d.withdrawals||[]);
-
-  document.getElementById('pending-deposits').innerHTML = deps.length===0
+  document.getElementById('dep-list').innerHTML = (d.deposits||[]).length===0
     ? '<div class="empty">Kutayotgan depozit yo\'q</div>'
-    : deps.map(p=>`
-    <div class="payment-card">
-      <div class="pinfo">
+    : (d.deposits||[]).map(p=>`
+    <div class="pay-card">
+      <div class="pay-info">
         👤 <b>${p.username||p.user_id}</b><br>
         💵 <b>${Number(p.amount).toLocaleString()}</b> so'm<br>
         📅 ${new Date(p.created_at).toLocaleString('uz-UZ')}
       </div>
-      <div class="pbtns">
-        <button class="btn btn-success" onclick="approvePayment(${p.id},'deposit')">✅ Tasdiqlash</button>
-        <button class="btn btn-danger" onclick="rejectPayment(${p.id},'deposit')">❌ Rad</button>
+      <div class="pay-btns">
+        <button class="btn btn-success" onclick="payAction(${p.id},'deposit','approve')">✅ Tasdiqlash</button>
+        <button class="btn btn-danger" onclick="payAction(${p.id},'deposit','reject')">❌ Rad</button>
       </div>
     </div>`).join('');
 
-  document.getElementById('pending-withdrawals').innerHTML = withs.length===0
+  document.getElementById('with-list').innerHTML = (d.withdrawals||[]).length===0
     ? '<div class="empty">Kutayotgan yechish yo\'q</div>'
-    : withs.map(p=>`
-    <div class="payment-card">
-      <div class="pinfo">
+    : (d.withdrawals||[]).map(p=>`
+    <div class="pay-card">
+      <div class="pay-info">
         👤 <b>${p.username||p.user_id}</b><br>
         💵 <b>${Number(p.amount).toLocaleString()}</b> so'm<br>
         💳 ${p.wallet_address||'-'}<br>
         📅 ${new Date(p.created_at).toLocaleString('uz-UZ')}
       </div>
-      <div class="pbtns">
-        <button class="btn btn-success" onclick="approvePayment(${p.id},'withdrawal')">✅ To'landi</button>
-        <button class="btn btn-danger" onclick="rejectPayment(${p.id},'withdrawal')">❌ Rad</button>
+      <div class="pay-btns">
+        <button class="btn btn-success" onclick="payAction(${p.id},'withdrawal','approve')">✅ To'landi</button>
+        <button class="btn btn-danger" onclick="payAction(${p.id},'withdrawal','reject')">❌ Rad</button>
       </div>
     </div>`).join('');
 }
 
-async function approvePayment(id, type) {
-  const r = await api(`/payments/admin/${type}/${id}/approve`, {method:'POST'});
-  if(r&&r.ok) { showToast('✅ Tasdiqlandi'); loadPayments(); }
-  else showToast('❌ Xatolik','red');
-}
-async function rejectPayment(id, type) {
-  const r = await api(`/payments/admin/${type}/${id}/reject`, {method:'POST'});
-  if(r&&r.ok) { showToast('❌ Rad etildi'); loadPayments(); }
-  else showToast('❌ Xatolik','red');
+async function payAction(id, type, action) {
+  const r = await req(`/payments/admin/${type}/${id}/${action}`, {method:'POST'});
+  if(r&&r.ok) { showToast('✅ Bajarildi'); loadPayments(); }
+  else showToast('❌ Xatolik',true);
 }
 
-// PROMOS
 async function loadPromos() {
-  const r = await api('/promocodes/list');
-  if(!r) return;
+  const r = await req('/promocodes/list');
+  if(!r||!r.ok) return;
   const data = await r.json();
-  document.getElementById('promos-table').innerHTML = data.length===0
-    ? '<tr><td colspan="6" style="text-align:center;color:var(--muted)">Promokod yo\'q</td></tr>'
-    : data.map(p=>`
-    <tr>
+  document.getElementById('promo-tbody').innerHTML = data.length===0
+    ? '<tr><td colspan="6" class="empty">Promokod yo\'q</td></tr>'
+    : data.map(p=>`<tr>
       <td><b>${p.code}</b></td>
       <td>${p.type==='percent'?'Foiz':'Miqdor'}</td>
       <td>${p.type==='percent'?p.value+'%':Number(p.value).toLocaleString()+" so'm"}</td>
-      <td>${p.used_count}</td>
-      <td>${p.max_uses}</td>
+      <td>${p.used_count}</td><td>${p.max_uses}</td>
       <td><span class="badge badge-${p.is_active?'active':'blocked'}">${p.is_active?'Aktiv':'Nofaol'}</span></td>
     </tr>`).join('');
 }
 
 async function createPromo() {
-  const code = document.getElementById('promo-code').value.trim().toUpperCase();
-  const type = document.getElementById('promo-type').value;
-  const value = parseFloat(document.getElementById('promo-value').value);
-  const max = parseInt(document.getElementById('promo-max').value)||100;
-  if(!code||!value) return showToast('Barcha maydonlarni to\'ldiring!','red');
-  const r = await api('/promocodes/create', {method:'POST', body:JSON.stringify({code, type, value, max_uses:max})});
-  if(r&&r.ok) {
-    showToast('✅ Promokod yaratildi');
-    document.getElementById('promo-code').value='';
-    document.getElementById('promo-value').value='';
-    loadPromos();
-  } else showToast('❌ Xatolik','red');
+  const code = document.getElementById('p-code').value.trim().toUpperCase();
+  const type = document.getElementById('p-type').value;
+  const value = parseFloat(document.getElementById('p-val').value);
+  const max = parseInt(document.getElementById('p-max').value)||100;
+  if(!code||!value) return showToast('Barcha maydonlarni to\'ldiring!',true);
+  const r = await req('/promocodes/create', {method:'POST', body:JSON.stringify({code,type,value,max_uses:max})});
+  if(r&&r.ok) { showToast('✅ Promokod yaratildi'); document.getElementById('p-code').value=''; document.getElementById('p-val').value=''; loadPromos(); }
+  else showToast('❌ Xatolik',true);
 }
 </script>
 </body>
