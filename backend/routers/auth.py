@@ -3,7 +3,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from pydantic import BaseModel
 from datetime import datetime
-import uuid
+import random, string
 
 from core.database import get_db
 from core.security import hash_password, verify_password, create_access_token
@@ -12,7 +12,8 @@ from models.models import User
 router = APIRouter()
 
 def gen_pass():
-    return str(uuid.uuid4())[:8]
+    chars = string.ascii_letters + string.digits
+    return ''.join(random.choices(chars, k=8))
 
 class LoginRequest(BaseModel):
     username: str
@@ -52,42 +53,51 @@ async def telegram_register(request: TelegramRequest, db: AsyncSession = Depends
     check_secret(request.secret)
     result = await db.execute(select(User).where(User.telegram_id == request.telegram_id))
     user = result.scalar_one_or_none()
+    
     if user:
-        return {"exists": True, "username": user.username, "balance": user.balance, "status": user.status.value}
-    # Yangi user
-    username = f"user_{request.telegram_id}"
+        # Eski user - parol o'zgarmaydi
+        return {
+            "exists": True,
+            "username": user.username,
+            "balance": user.balance,
+            "status": user.status.value
+        }
+    
+    # Yangi user - 1 marta parol
+    username = request.telegram_id
     password = gen_pass()
-    new_user = User(telegram_id=request.telegram_id, username=username, password_hash=hash_password(password), balance=0.0)
+    new_user = User(
+        telegram_id=request.telegram_id,
+        username=username,
+        password_hash=hash_password(password),
+        balance=0.0
+    )
     db.add(new_user)
     await db.commit()
     await db.refresh(new_user)
     return {"exists": False, "username": username, "password": password, "user_id": new_user.id}
 
-@router.post("/reset-my-password")
+@router.post("/reset-password")
 async def reset_password(request: TelegramRequest, db: AsyncSession = Depends(get_db)):
     check_secret(request.secret)
     result = await db.execute(select(User).where(User.telegram_id == request.telegram_id))
     user = result.scalar_one_or_none()
     if not user:
-        raise HTTPException(status_code=404, detail="User topilmadi")
-    new_password = gen_pass()
-    user.password_hash = hash_password(new_password)
-    await db.commit()
-    return {"username": user.username, "password": new_password}
-
-@router.post("/fix-user")
-async def fix_user(request: TelegramRequest, db: AsyncSession = Depends(get_db)):
-    """Eski userni tuzatish - yangi parol beradi yoki yaratadi"""
-    check_secret(request.secret)
-    result = await db.execute(select(User).where(User.telegram_id == request.telegram_id))
-    user = result.scalar_one_or_none()
-    new_password = gen_pass()
-    if user:
-        user.password_hash = hash_password(new_password)
+        # User yo'q - yangi yaratamiz
+        username = request.telegram_id
+        password = gen_pass()
+        new_user = User(
+            telegram_id=request.telegram_id,
+            username=username,
+            password_hash=hash_password(password),
+            balance=0.0
+        )
+        db.add(new_user)
         await db.commit()
-        return {"status": "updated", "username": user.username, "password": new_password, "balance": user.balance}
-    username = f"user_{request.telegram_id}"
-    new_user = User(telegram_id=request.telegram_id, username=username, password_hash=hash_password(new_password), balance=0.0)
-    db.add(new_user)
+        return {"username": username, "password": password, "balance": 0}
+    
+    # User bor - parolini yangilaymiz
+    password = gen_pass()
+    user.password_hash = hash_password(password)
     await db.commit()
-    return {"status": "created", "username": username, "password": new_password, "balance": 0}
+    return {"username": user.username, "password": password, "balance": user.balance}
