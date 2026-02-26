@@ -15,7 +15,7 @@ from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, ReplyKeybo
 logging.basicConfig(level=logging.INFO)
 
 BOT_TOKEN = os.getenv("BOT_TOKEN", "")
-API_BASE  = os.getenv("API_BASE", "https://twatokenuzabcd-production.up.railway.app/api")
+API_BASE  = os.getenv("API_BASE", "https://twatokenuzabcd-production-f493.up.railway.app/api")
 WEBAPP_URL = os.getenv("WEBAPP_URL", "https://twatokenuzabcd.vercel.app")
 SECRET    = os.getenv("SECRET", os.getenv("SECRET_KEY", ""))[:20]
 ADMIN_IDS = [int(x) for x in os.getenv("ADMIN_IDS", "").split(",") if x.strip()]
